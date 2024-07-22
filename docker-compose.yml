@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   postgres:
     image: postgres:latest
@@ -7,20 +6,31 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: airflow
     ports:
-      - "5432:5432"
+      - "5432:5432" 
 
   airflow:
-    image: apache/airflow:2.1.2
+    image: apache/airflow:2.9.3
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
-      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://user:password@postgres:5432/airflow
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://user:password@postgres:5432/airflow
       AIRFLOW__CORE__FERNET_KEY: ''
+      AIRFLOW__CORE__TEST_CONNECTION: 'enabled'
       AIRFLOW__CORE__LOAD_EXAMPLES: 'False'
+      AIRFLOW__WEBSERVER__EXPOSE_CONFIG: 'True'
+      PYTHONPATH: /opt/airflow
+      GOOGLE_APPLICATION_CREDENTIALS: /opt/airflow/credentials/datasync-pro-etl.json
     volumes:
-      - ./dags:/usr/local/airflow/dags
-      - ./logs:/usr/local/airflow/logs
-      - ./plugins:/usr/local/airflow/plugins
+      - .:/opt/airflow
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./plugins:/opt/airflow/plugins
+      - ./config:/opt/airflow/config
+      - ./credentials:/opt/airflow/credentials
     ports:
       - "8080:8080"
     depends_on:
       - postgres
+    entrypoint: >
+      bash -c "airflow db init &&
+               airflow users create -r Admin -u admin -p admin -e admin@example.com -f Admin -l User &&
+               airflow scheduler & airflow webserver"
