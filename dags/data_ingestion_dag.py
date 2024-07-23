@@ -1,8 +1,9 @@
 from airflow import DAG
-from airflow.models import Variable
 from airflow.operators.python import PythonOperator
 from datetime import datetime
-from scripts.api_ingestion import ingest_api_data
+from scripts.api_ingestion import (ingest_kassal_product_data, 
+                                   ingest_kassal_store_data, 
+                                   ingest_VDA_product_data)
 from scripts.file_processing import process_uploaded_files
 from scripts.gcs_upload import upload_to_gcs
 
@@ -23,23 +24,46 @@ dag = DAG(
     catchup=False,
 )
 
-api_key = Variable.get('KASSAL_API_KEY', default_var=None)
-
-## task for ingesting api data
-ingest_api_task = PythonOperator(
-    task_id='ingest_api_data',
-    python_callable=ingest_api_data,
-    op_args=[api_key],
+ingest_kassal_product_data_task = PythonOperator(
+    task_id='ingest_kassal_product_data',
+    python_callable=ingest_kassal_product_data,
     dag=dag,
 )
 
-upload_api_data_task = PythonOperator(
-    task_id='upload_api_data_to_gcs',
-    python_callable=lambda: upload_to_gcs('/tmp/kassal_api_data.json', 'kassal_api_data.json'),
+ingest_kassal_store_data_task = PythonOperator(
+    task_id='ingest_kassal_store_data',
+    python_callable=ingest_kassal_store_data,
     dag=dag,
 )
-# Define the dependencies
-ingest_api_task >> upload_api_data_task
+
+ingest_vda_product_data_task = PythonOperator(
+    task_id='ingest_vda_product_data',
+    python_callable=ingest_VDA_product_data,
+    dag=dag,
+)
+
+upload_kassal_product_data_task = PythonOperator(
+    task_id='upload_kassal_product_data_to_gcs',
+    python_callable=lambda: upload_to_gcs('/tmp/kassal_product_data_test.ndjson', 'test/kassal_product_data.ndjson'),
+    dag=dag,
+)
+
+upload_kassal_store_data_task = PythonOperator(
+    task_id='upload_kassal_store_data_to_gcs',
+    python_callable=lambda: upload_to_gcs('/tmp/kassal_store_data_test.ndjson', 'test/kassal_store_data_test.ndjson'),
+    dag=dag,
+)
+
+upload_vda_product_data_task = PythonOperator(
+    task_id='upload_vda_product_data_to_gcs',
+    python_callable=lambda: upload_to_gcs('/tmp/vda_product_data_test.ndjson', 'test/vda_product_data_test.ndjson'),
+    dag=dag,
+)
+
+# Define task dependencies
+ingest_kassal_product_data_task >> upload_kassal_product_data_task >> ingest_vda_product_data_task >> upload_vda_product_data_task
+ingest_kassal_store_data_task >> upload_kassal_store_data_task
+
 
 # ## task for ingesting data uploaded from platform
 # process_files_task = PythonOperator(
