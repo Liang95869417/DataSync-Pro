@@ -1,0 +1,28 @@
+version: 2
+
+models:
+  - name: unified_product_data
+    description: "Unified product data combining kassal and vda data"
+    columns:
+      - name: gtin
+        description: "Global Trade Item Number"
+        tests:
+          - not_null
+          - unique
+      - name: name
+        description: "Product name"
+        tests:
+          - not_null
+
+  - name: clean_product_data
+    description: "Cleaned and normalized product data"
+    columns:
+      - name: gtin
+        description: "Global Trade Item Number"
+        tests:
+          - not_null
+          - unique
+      - name: name
+        description: "Product name"
+        tests:
+          - not_null

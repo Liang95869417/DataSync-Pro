@@ -1,0 +1,7 @@
+-- SELECT
+--     store_id,
+--     name,
+--     code,
+--     url,
+--     logo_url
+-- FROM `your_project.your_dataset.kassal_store_data`

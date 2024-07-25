@@ -44,7 +44,7 @@ ingest_vda_product_data_task = PythonOperator(
 
 upload_kassal_product_data_task = PythonOperator(
     task_id='upload_kassal_product_data_to_gcs',
-    python_callable=lambda: upload_to_gcs('/tmp/kassal_product_data_test.ndjson', 'test/kassal_product_data.ndjson'),
+    python_callable=lambda: upload_to_gcs('/tmp/kassal_product_data_test.ndjson', 'test/kassal_product_data_test.ndjson'),
     dag=dag,
 )
 
