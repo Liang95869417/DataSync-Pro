@@ -1,28 +1,121 @@
 version: 2
 
 models:
-  - name: unified_product_data
-    description: "Unified product data combining kassal and vda data"
+  - name: flatten_kassal_product_data
+    description: "Flattened and normalized Kassal product data."
     columns:
-      - name: gtin
-        description: "Global Trade Item Number"
+      - name: id
+        description: "ID generated from kassal"
         tests:
           - not_null
           - unique
-      - name: name
-        description: "Product name"
-        tests:
-          - not_null
-
-  - name: clean_product_data
-    description: "Cleaned and normalized product data"
-    columns:
       - name: gtin
-        description: "Global Trade Item Number"
+        description: "Global Trade Item Number (EAN)."
         tests:
           - not_null
-          - unique
       - name: name
-        description: "Product name"
+        description: "Product name."
+      - name: description
+        description: "Product description."
+      - name: ingredients
+        description: "Ingredients of the product."
+      - name: vendor
+        description: "Vendor name."
+      - name: image_url
+        description: "URL of the product image."
+      - name: created_at
+        description: "Timestamp when the product was created."
+      - name: updated_at
+        description: "Timestamp when the product was last updated."
+      - name: allergens
+        description: "List of allergens contained in the product."
+      - name: labels
+        description: "Labels associated with the product."
+      - name: category
+        description: "Product category."
+      - name: price_history
+        description: "Historical pricing information."
+      - name: nutrition
+        description: "Nutritional information."
+      - name: brand
+        description: "Brand of the product."
+      - name: store
+        description: "Store information."
+  - name: flatten_vda_product_data
+    description: "Flattened and normalized VDA product data."
+    columns:
+      - name: ean
+        description: "Global Trade Item Number (EAN)."
         tests:
           - not_null
+      - name: description
+        description: "Product description."
+      - name: ingredients
+        description: "Ingredients of the product."
+      - name: vendor
+        description: "Vendor name."
+      - name: image_url
+        description: "URL of the product image."
+      - name: updated_at
+        description: "Timestamp when the product was last updated."
+      - name: allergens
+        description: "List of allergens contained in the product."
+      - name: labels
+        description: "Labels associated with the product."
+      - name: category
+        description: "Product category."
+      - name: nutrition
+        description: "Nutritional information."
+      - name: gln
+        description: "Global Location Number of the vendor."
+      - name: production_country
+        description: "Country of production."
+      - name: min_temp
+        description: "Minimum temperature in Celsius."
+      - name: max_temp
+        description: "Maximum temperature in Celsius."
+  - name: merge_product_data
+    description: "Merged product data from Kassal and VDA sources."
+    columns:
+      - name: ean
+        description: "Global Trade Item Number (EAN)."
+        tests:
+          - not_null
+      - name: name
+        description: "Product name."
+      - name: ingredients
+        description: "Ingredients of the product."
+      - name: vendor
+        description: "Vendor name."
+      - name: kassal_image_url
+        description: "URL of the product image from kassal."
+      - name: vda_image_url
+        description: "URL of the product image from vda."
+      - name: created_at
+        description: "Timestamp when the product was created."
+      - name: updated_at
+        description: "Timestamp when the product was last updated."
+      - name: kassal_allergens
+        description: "List of allergens contained in the product from kassal."
+      - name: vda_allergens
+        description: "List of allergens contained in the product from vda."
+      - name: kassal_category
+        description: "Product category from kassal."
+      - name: vda_category
+        description: "Product category from vda."
+      - name: price_history
+        description: "Historical pricing information."
+      - name: nutrition
+        description: "Nutritional information."
+      - name: brand
+        description: "Brand of the product."
+      - name: store
+        description: "Store information."
+      - name: gln
+        description: "Global Location Number of the vendor."
+      - name: production_country
+        description: "Country of production."
+      - name: min_temp
+        description: "Minimum temperature in Celsius."
+      - name: max_temp
+        description: "Maximum temperature in Celsius."
