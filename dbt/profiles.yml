@@ -1,5 +1,5 @@
 etl:
-  target: final
+  target: dev
   outputs:
     dev:
       dataset: raw_dataset

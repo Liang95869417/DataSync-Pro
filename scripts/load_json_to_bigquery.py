@@ -3,7 +3,7 @@ import logging
 from google.cloud import bigquery
 from google.cloud import storage
 
-def load_json_to_raw(bucket_name, source_prefix, dataset_id):
+def load_json_to_raw(bucket_name: str, source_prefix: str, dataset_id: str):
     client = bigquery.Client()
     storage_client = storage.Client()
 

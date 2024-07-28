@@ -30,18 +30,9 @@ clean-targets:         # directories to be removed by `dbt clean`
 models:
   etl:
     intermediate:
-      +materialized: view
-      +enabled: false
-
-    final:
       +materialized: table
       # +enabled: false
 
     # Exclude example models from being materialized
     example: 
       +enabled: false
-
-    # final:
-    #   +schema: final
-    #   +database: final_dataset
-    #   materialized: table
