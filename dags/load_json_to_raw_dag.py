@@ -4,7 +4,7 @@ from datetime import datetime
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.operators.empty import EmptyOperator
-from scripts.load_json_to_bigquery import load_json_to_raw
+from scripts.load_json_to_bigquery import load_json_to_bigquery
 
 
 default_args = {
@@ -21,7 +21,7 @@ with DAG('load_json_to_raw_dag',
 
     load_json_task = PythonOperator(
         task_id='load_json_to_raw',
-        python_callable=load_json_to_raw,
+        python_callable=load_json_to_bigquery,
         op_kwargs={
             'bucket_name': 'ingested-data-1',
             'source_prefix': 'test/',
