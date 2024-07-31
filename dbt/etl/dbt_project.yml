@@ -31,7 +31,7 @@ models:
   etl:
     transform:
       intermediate:
-        +materialized: ephemeral
+        +materialized: table
       final:
         +materialized: table 
 

@@ -1,9 +1,8 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from datetime import datetime
-from scripts.api_ingestion import (ingest_kassal_product_data_all, 
-                                   ingest_kassal_store_data_all, 
-                                   ingest_VDA_product_data_all)
+from scripts.api_ingestion_vda import ingest_VDA_product_data
+from scripts.api_ingestion_kassal import ingest_kassal_product_data_all, ingest_kassal_store_data_all
 from scripts.gcs_upload import upload_to_gcs
 from scripts.load_json_to_bigquery import load_json_to_bigquery
 
@@ -38,25 +37,29 @@ ingest_kassal_store_data_all_task = PythonOperator(
 
 ingest_vda_product_data_all_task = PythonOperator(
     task_id='ingest_vda_product_data',
-    python_callable=ingest_VDA_product_data_all,
+    python_callable=lambda: ingest_VDA_product_data('/tmp/kassal_product_data.ndjson',
+                                                    '/tmp/vda_product_data.ndjson'),
     dag=dag,
 )
 
 upload_kassal_product_data_task = PythonOperator(
     task_id='upload_kassal_product_data_to_gcs',
-    python_callable=lambda: upload_to_gcs('/tmp/kassal_product_data.ndjson', 'production/kassal_product_data.ndjson'),
+    python_callable=lambda: upload_to_gcs('/tmp/kassal_product_data.ndjson', 
+                                          'production/kassal_product_data.ndjson'),
     dag=dag,
 )
 
 upload_kassal_store_data_task = PythonOperator(
     task_id='upload_kassal_store_data_to_gcs',
-    python_callable=lambda: upload_to_gcs('/tmp/kassal_store_data.ndjson', 'production/kassal_store_data_test.ndjson'),
+    python_callable=lambda: upload_to_gcs('/tmp/kassal_store_data.ndjson', 
+                                          'production/kassal_store_data_test.ndjson'),
     dag=dag,
 )
 
 upload_vda_product_data_task = PythonOperator(
     task_id='upload_vda_product_data_to_gcs',
-    python_callable=lambda: upload_to_gcs('/tmp/vda_product_data.ndjson', 'production/vda_product_data_test.ndjson'),
+    python_callable=lambda: upload_to_gcs('/tmp/vda_product_data.ndjson', 
+                                          'production/vda_product_data_test.ndjson'),
     dag=dag,
 )
 

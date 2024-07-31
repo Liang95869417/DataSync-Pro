@@ -17,15 +17,16 @@ SELECT
     v.image_url AS vda_image_url,
     k.created_at,
     k.updated_at,
-    k.allergens AS kassal_allergens,
-    v.allergens AS vda_allergens,
+    COALESCE(k.allergens, v.allergens) AS allergens,
+    CASE
+        WHEN k.nutrition IS NOT NULL THEN k.nutrition
+        ELSE v.nutrition
+    END AS nutrition,
     k.category AS kassal_category,
     v.category AS vda_category,
     k.price_history,
     k.current_price,
     k.current_unit_price,
-    k.nutrition AS kassal_nutrition,
-    v.nutrition AS vda_nutrition,
     k.brand,
     k.store,
     k.product_weight,
@@ -33,7 +34,10 @@ SELECT
     v.gln,
     v.production_country,
     v.min_temp,
-    v.max_temp
+    v.max_temp,
+    GENERATE_UUID() AS category_id,
+    GENERATE_UUID() AS vendor_id,
+    GENERATE_UUID() AS price_id
 FROM
     kassal_flattened k
 LEFT JOIN

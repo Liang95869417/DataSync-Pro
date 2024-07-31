@@ -9,7 +9,9 @@ services:
       - "5432:5432" 
 
   airflow:
-    image: apache/airflow:2.9.3
+    build:
+      context: .
+      dockerfile: Dockerfile
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://user:password@postgres:5432/airflow
@@ -30,7 +32,5 @@ services:
       - "8080:8080"
     depends_on:
       - postgres
-    entrypoint: >
-      bash -c "airflow db init &&
-               airflow users create -r Admin -u admin -p admin -e admin@example.com -f Admin -l User &&
-               airflow scheduler & airflow webserver"
+    entrypoint: ["/entrypoint.sh"]
+
