@@ -75,7 +75,7 @@ def ingest_kassal_store_data_all() -> None:
             url = response['links'].get('next')
 
     if all_stores:
-        local_path = 'kassal_store_data.ndjson'
+        local_path = '/tmp/kassal_store_data.ndjson'
         save_to_ndjson(local_path, all_stores)
         logging.info(f'Data fetched from Kassal store endpoint: {all_stores}')
     else:

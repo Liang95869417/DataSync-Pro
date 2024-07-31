@@ -106,21 +106,3 @@ chain(ingest_kassal_store_data_all_task,
       upload_kassal_store_data_task,
       load_json_task
       )
-ingest_kassal_product_data_all_task >> upload_kassal_product_data_task >> ingest_vda_product_data_all_task >> upload_vda_product_data_task >> load_json_task
-ingest_kassal_store_data_all_task >> upload_kassal_store_data_task >> load_json_task
-
-
-# ## task for ingesting data uploaded from platform
-# process_files_task = PythonOperator(
-#     task_id='process_uploaded_files',
-#     python_callable=process_uploaded_files,
-#     dag=dag,
-# )
-
-# upload_processed_files_task = PythonOperator(
-#     task_id='upload_processed_files_to_gcs',
-#     python_callable=lambda: upload_to_gcs('/tmp/processed_files/', 'processed_files/'),
-#     dag=dag,
-# )
-
-# process_files_task >> upload_processed_files_task

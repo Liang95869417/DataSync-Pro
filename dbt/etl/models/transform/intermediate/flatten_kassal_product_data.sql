@@ -1,10 +1,11 @@
 -- models/intermediate/flatten_kassal_product_data.sql
 
+
 WITH kassal_flattened AS (
     SELECT
-        id as product_id,
+        id AS product_id,
         ean,
-        name as product_name,
+        name AS product_name,
         ingredients,
         vendor AS vendor_name,
         image AS image_url,
@@ -26,7 +27,7 @@ WITH kassal_flattened AS (
                 nutrition.display_name AS name,
                 CAST(nutrition.amount AS DECIMAL) AS amount,
                 nutrition.unit AS unit
-            FROM UNNEST(nutrition) as nutrition
+            FROM UNNEST(nutrition) AS nutrition
         ) AS nutrition,
         brand,
         store,
@@ -34,6 +35,6 @@ WITH kassal_flattened AS (
         weight_unit,
         description AS product_desc
     FROM
-        datasync-pro.raw_dataset.kassal_product_data_test
+        `{{ var('dataset') }}.{{ var('kassal_table_id') }}`
 )
 SELECT * FROM kassal_flattened

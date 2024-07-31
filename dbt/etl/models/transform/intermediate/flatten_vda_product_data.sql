@@ -30,6 +30,6 @@ WITH vda_flattened AS (
         mengde AS product_weight,
         mengdeType AS weight_unit
     FROM
-        datasync-pro.raw_dataset.vda_product_data_test
+        `{{ var('dataset') }}.{{ var('vda_table_id') }}`
 )
 SELECT * FROM vda_flattened
