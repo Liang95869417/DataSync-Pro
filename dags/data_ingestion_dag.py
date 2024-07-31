@@ -35,11 +35,11 @@ ingest_kassal_product_data_task = PythonOperator(
     dag=dag,
 )
 
-# ingest_kassal_store_data_task = PythonOperator(
-#     task_id='ingest_kassal_store_data',
-#     python_callable=ingest_kassal_store_data_all,
-#     dag=dag,
-# )
+ingest_kassal_store_data_task = PythonOperator(
+    task_id='ingest_kassal_store_data',
+    python_callable=ingest_kassal_store_data_all,
+    dag=dag,
+)
 
 ingest_vda_product_data_task = PythonOperator(
     task_id='ingest_vda_product_data',
@@ -55,12 +55,12 @@ upload_kassal_product_data_task = PythonOperator(
     dag=dag,
 )
 
-# upload_kassal_store_data_task = PythonOperator(
-#     task_id='upload_kassal_store_data_to_gcs',
-#     python_callable=lambda: upload_to_gcs('/tmp/kassal_store_data_test.ndjson', 
-#                                           'test/kassal_store_data_test.ndjson'),
-#     dag=dag,
-# )
+upload_kassal_store_data_task = PythonOperator(
+    task_id='upload_kassal_store_data_to_gcs',
+    python_callable=lambda: upload_to_gcs('/tmp/kassal_store_data_test.ndjson', 
+                                          'test/kassal_store_data_test.ndjson'),
+    dag=dag,
+)
 
 upload_vda_product_data_task = PythonOperator(
     task_id='upload_vda_product_data_to_gcs',
@@ -91,7 +91,7 @@ dbt_test = PythonOperator(
     op_args=['test']
 )
 
-# Define task dependencies
+## Define task dependencies
 chain(ingest_kassal_product_data_task,
       upload_kassal_product_data_task,
       ingest_vda_product_data_task,
@@ -99,7 +99,9 @@ chain(ingest_kassal_product_data_task,
       load_json_task,
       dbt_run,
       dbt_test)
-# ingest_kassal_store_data_task >> upload_kassal_store_data_task
+chain(ingest_kassal_store_data_task,
+      upload_kassal_store_data_task)
+
 
 
 # ## task for ingesting data uploaded from platform

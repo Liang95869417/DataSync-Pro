@@ -11,6 +11,15 @@ from scripts.utils import save_to_ndjson
 client_id = Variable.get('VDA_CLIENT_ID', default_var=None)
 client_secret = Variable.get('VDA_CLIENT_SECRET', default_var=None)
 
+def convert_comma_to_dot_in_json(data_entry: dict):
+    if 'mengde' in data_entry and isinstance(data_entry['mengde'], str):
+        try:
+            # Replace comma with dot and convert to float
+            data_entry['mengde'] = float(data_entry['mengde'].replace(',', '.'))
+        except ValueError:
+            logging.error(f"Invalid mengde value: {data_entry['mengde']}")
+            data_entry['mengde'] = None  # or handle this case as needed
+    return data_entry
 
 ### get data from VDA
 @retry(stop=stop_after_attempt(5), wait=wait_exponential(multiplier=1, min=4, max=10))
@@ -57,7 +66,7 @@ def ingest_VDA_product_data(kassal_temp_file, local_vda_temp_file) -> None:
     gtin_list = get_gtin_list(kassal_product_data)
     results = []
 
-    max_workers = 10  # Set the number of workers based on machine's capability and API rate limits
+    max_workers = 5  
 
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         future_to_gtin = {executor.submit(get_VDA_response, gtin): gtin for gtin in gtin_list}
@@ -66,7 +75,8 @@ def ingest_VDA_product_data(kassal_temp_file, local_vda_temp_file) -> None:
             try:
                 response = future.result()
                 if response:
-                    results.extend(response)
+                    response_with_dot = convert_comma_to_dot_in_json(response)
+                    results.extend(response_with_dot)
                     logging.info(f"Processed GTIN: {gtin}")
                     logging.info(f"Got response data: {response}")
             except Exception as e:
