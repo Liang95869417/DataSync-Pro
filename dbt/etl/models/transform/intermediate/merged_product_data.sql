@@ -39,8 +39,20 @@ SELECT
     v.production_country,
     v.min_temp,
     v.max_temp,
-    GENERATE_UUID() AS category_id,
-    COALESCE(TO_HEX(MD5(COALESCE(k.vendor_name, v.vendor_name))), GENERATE_UUID()) AS vendor_id,
+    COALESCE(
+        TO_HEX(MD5(CONCAT(
+            TO_JSON_STRING(k.category),
+            v.category
+        ))),
+        GENERATE_UUID()
+    ) AS category_id,
+    COALESCE(
+        TO_HEX(MD5(COALESCE(
+            k.vendor_name, 
+            v.vendor_name
+        ))), 
+        GENERATE_UUID()
+    ) AS vendor_id,
     GENERATE_UUID() AS price_id
 FROM
     kassal_flattened k

@@ -1,6 +1,6 @@
 -- Create the dimension table for category by extracting unique categories from the source data
 WITH category_cte AS (
-    SELECT
+    SELECT DISTINCT
         category_id,
         kassal_category,
         vda_category
