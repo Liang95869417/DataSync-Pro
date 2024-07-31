@@ -3,7 +3,7 @@
 -- Create the dimension table for price by extracting unique prices from the source data
 WITH price_cte AS (
     SELECT
-        GENERATE_UUID() AS price_id,
+        price_id,
         current_price,
         current_unit_price,
         price_history

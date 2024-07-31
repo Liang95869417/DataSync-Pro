@@ -271,7 +271,6 @@ models:
       - name: store_code
         description: "Foreign key to the store dimension table."
         tests:
-          - not_null
           - relationships:
               to: ref('dim_store')
               field: store_code

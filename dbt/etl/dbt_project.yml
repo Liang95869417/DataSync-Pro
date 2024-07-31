@@ -29,9 +29,11 @@ clean-targets:         # directories to be removed by `dbt clean`
 # files using the `{{ config(...) }}` macro.
 models:
   etl:
-    intermediate:
-      +materialized: table
-      # +enabled: false
+    transform:
+      intermediate:
+        +materialized: table
+      final:
+        +materialized: table 
 
     # Exclude example models from being materialized
     example: 

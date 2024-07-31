@@ -4,6 +4,6 @@ sources:
   - name: raw_dataset
     tables:
       - name: kassal_product_data
-      - name: vda_product_data_test
+      - name: vda_product_data
 
 
