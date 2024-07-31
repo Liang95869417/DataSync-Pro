@@ -1,0 +1,276 @@
+version: 2
+
+models:
+  - name: flatten_kassal_product_data
+    description: "Flattened and normalized Kassal product data."
+    columns:
+      - name: product_id
+        description: "ID generated from kassal"
+        tests:
+          - not_null
+          - unique
+      - name: ean
+        description: "Global Trade Item Number (EAN)."
+        tests:
+          - not_null
+      - name: product_name
+        description: "Product name."
+      - name: ingredients
+        description: "Ingredients of the product."
+      - name: vendor_name
+        description: "Vendor name."
+      - name: image_url
+        description: "URL of the product image."
+      - name: created_at
+        description: "Timestamp when the product was created."
+      - name: updated_at
+        description: "Timestamp when the product was last updated."
+      - name: allergens
+        description: "List of allergens contained in the product."
+      - name: labels
+        description: "Labels associated with the product."
+      - name: category
+        description: "Product category."
+      - name: price_history
+        description: "Historical pricing information."
+      - name: current_price
+        description: "Current price."
+      - name: current_unit_price
+        description: "Current unit price."
+      - name: nutrition
+        description: "Nutritional information."
+      - name: brand
+        description: "Brand of the product."
+      - name: store
+        description: "Store information."
+      - name: product_weight
+        description: "Product weight."
+      - name: weight_unit
+        description: "Product weight unit."
+      - name: product_desc
+        description: "Product description."
+
+  - name: flatten_vda_product_data
+    description: "Flattened and normalized VDA product data."
+    columns:
+      - name: ean
+        description: "Global Trade Item Number (EAN)."
+        tests:
+          - not_null
+      - name: product_name
+        description: "Product name."
+      - name: ingredients
+        description: "Ingredients of the product."
+      - name: vendor_name
+        description: "Vendor name."
+      - name: image_url
+        description: "URL of the product image."
+      - name: updated_at
+        description: "Timestamp when the product was last updated."
+      - name: allergens
+        description: "List of allergens contained in the product."
+      - name: labels
+        description: "Labels associated with the product."
+      - name: category
+        description: "Product category."
+      - name: nutrition
+        description: "Nutritional information."
+      - name: gln
+        description: "Global Location Number of the vendor."
+      - name: production_country
+        description: "Country of production."
+      - name: min_temp
+        description: "Minimum temperature in Celsius."
+      - name: max_temp
+        description: "Maximum temperature in Celsius."
+      - name: product_desc
+        description: "Product description."
+
+  - name: merged_product_data
+    description: "Merged product data from Kassal and VDA sources."
+    columns:
+      - name: product_id
+        description: "ID generated from kassal"
+        tests:
+          - not_null
+          - unique
+      - name: ean
+        description: "Global Trade Item Number (EAN)."
+        tests:
+          - not_null
+      - name: product_name
+        description: "Product name."
+      - name: ingredients
+        description: "Ingredients of the product."
+      - name: vendor_name
+        description: "Vendor name."
+      - name: kassal_image_url
+        description: "URL of the product image from kassal."
+      - name: vda_image_url
+        description: "URL of the product image from vda."
+      - name: created_at
+        description: "Timestamp when the product was created."
+      - name: updated_at
+        description: "Timestamp when the product was last updated."
+      - name: kassal_allergens
+        description: "List of allergens contained in the product from kassal."
+      - name: vda_allergens
+        description: "List of allergens contained in the product from vda."
+      - name: kassal_category
+        description: "Product category from kassal."
+      - name: vda_category
+        description: "Product category from vda."
+      - name: price_history
+        description: "Historical pricing information."
+      - name: current_price
+        description: "Current price."
+      - name: current_unit_price
+        description: "Current unit price."
+      - name: kassal_nutrition
+        description: "Nutritional information from kassal."
+      - name: vda_nutrition
+        description: "Nutritional information from vda."
+      - name: brand
+        description: "Brand of the product."
+      - name: store
+        description: "Store information."
+      - name: gln
+        description: "Global Location Number of the vendor."
+      - name: production_country
+        description: "Country of production."
+      - name: product_weight
+        description: "Product weight."
+      - name: weight_unit
+        description: "Product weight unit."
+      - name: min_temp
+        description: "Minimum temperature in Celsius."
+      - name: max_temp
+        description: "Maximum temperature in Celsius."
+
+  - name: dim_category
+    description: "Dimension table storing product category information."
+    columns:
+      - name: category_id
+        description: "Primary key."
+        tests:
+          - not_null
+          - unique
+      - name: kassal_category
+        description: "Product category from Kassal."
+      - name: vda_category
+        description: "Product category from VDA."
+
+  - name: dim_vendor
+    description: "Dimension table storing vendor information."
+    columns:
+      - name: vendor_id
+        description: "Primary key."
+        tests:
+          - not_null
+          - unique
+      - name: vendor_name
+        description: "Vendor name."
+      - name: gln
+        description: "Global Location Number of the vendor."
+
+  - name: dim_price
+    description: "Dimension table storing historical pricing information."
+    columns:
+      - name: price_id
+        description: "Primary key."
+        tests:
+          - not_null
+          - unique
+      - name: current_price
+        description: "Current price."
+      - name: current_unit_price
+        description: "Current unit price."
+      - name: price_history
+        description: "Historical pricing information."
+
+
+  - name: dim_store
+    description: "Dimension table storing store information."
+    columns:
+      - name: store_code
+        description: "Code of the store."
+      - name: store_name
+        description: "Store name."
+      - name: store_url
+        description: "URL of the store."
+      - name: logo_url
+        description: "URL of the store logo."
+
+  - name: fact_product
+    description: "Fact table storing relevant information about products."
+    columns:
+      - name: product_id
+        description: "Primary key, product ID from Kassal source."
+        tests:
+          - not_null
+          - unique
+      - name: ean
+        description: "Global Trade Item Number (EAN)."
+        tests:
+          - not_null
+      - name: product_name
+        description: "Product name."
+      - name: product_weight
+        description: "Product weight."
+      - name: weight_unit
+        description: "Unit of weight."
+      - name: kassal_image_url
+        description: "URL of the product image from Kassal."
+      - name: vda_image_url
+        description: "URL of the product image from VDA."
+      - name: category_id
+        description: "Foreign key to the category dimension table."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_category')
+              field: category_id
+      - name: vendor_id
+        description: "Foreign key to the vendor dimension table."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_vendor')
+              field: vendor_id
+      - name: created_at
+        description: "Timestamp when the product was created."
+      - name: updated_at
+        description: "Timestamp when the product was last updated."
+      - name: labels
+        description: "Labels and certifications for the product in JSONB format."
+      - name: kassal_allergens
+        description: "List of allergens contained in the product from Kassal."
+      - name: vda_allergens
+        description: "List of allergens contained in the product from VDA."
+      - name: ingredients
+        description: "Ingredients of the product."
+      - name: kassal_nutrition
+        description: "Nutritional information from Kassal in JSONB format."
+      - name: vda_nutrition
+        description: "Nutritional information from VDA in JSONB format."
+      - name: brand
+        description: "Brand of the product."
+      - name: production_country
+        description: "Country of production."
+      - name: min_temp
+        description: "Minimum storage temperature in Celsius."
+      - name: max_temp
+        description: "Maximum storage temperature in Celsius."
+      - name: price_id
+        description: "Foreign key to the price dimension table."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_price')
+              field: price_id
+      - name: store_code
+        description: "Foreign key to the store dimension table."
+        tests:
+          - relationships:
+              to: ref('dim_store')
+              field: store_code

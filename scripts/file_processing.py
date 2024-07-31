@@ -5,7 +5,7 @@ from google.cloud import storage
 ## TODO: Discuss with Torben and David, what data formats will we accept from file upload?
 def process_uploaded_files():
     client = storage.Client()
-    bucket = client.get_bucket('your_bucket_name')
+    bucket = client.get_bucket('ingested-data-1')
 
     # Assuming files are uploaded to a specific directory in GCS
     blobs = bucket.list_blobs(prefix='uploaded_files/')

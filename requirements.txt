@@ -1,8 +1,9 @@
-apache-airflow
-apache-airflow-providers-google
-dbt-core
-dbt-bigquery
-google-cloud-storage
-pandas
-requests
-SQLAlchemy
+apache-airflow==2.9.3
+apache-airflow-providers-google==10.21.0
+dbt-core==1.8.4
+dbt-bigquery==1.8.2
+google-cloud-storage==2.17.0
+pandas==2.1.4
+requests==2.32.3
+SQLAlchemy==1.4.52
+tenacity==8.5.0

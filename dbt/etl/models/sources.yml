@@ -1,43 +1,10 @@
 version: 2
 
 sources:
-  - name: raw_dataset
+  - name: production_dataset # using raw_dataset for development
     tables:
       - name: kassal_product_data
-        description: "Primary product data source from Kassal"
-        columns:
-          - name: ean
-            description: "GTIN (Global Trade Item Number)"
-          - name: name
-            description: "Product name"
-          - name: description
-            description: "Product description"
-          - name: weight
-            description: "Product weight"
-          - name: weight_unit
-            description: "Weight unit"
-          - name: image
-            description: "Product image URL"
-          - name: ingredients
-            description: "Product ingredients"
-          - name: allergens
-            description: "Product allergens"
-          - name: labels
-            description: "Product labels"
-          - name: created_at
-            description: "Record creation timestamp"
-          - name: updated_at
-            description: "Record update timestamp"
-      - name: vda_product_data_test
-        description: "Supplementary product data source from VDA"
-        columns:
-          - name: gtin
-            description: "GTIN (Global Trade Item Number)"
-          - name: firmaNavn
-            description: "Vendor name"
-          - name: minimumsTemperaturCelcius
-            description: "Minimum storage temperature in Celsius"
-          - name: maksimumsTemperaturCelcius
-            description: "Maximum storage temperature in Celsius"
-          - name: produksjonsland
-            description: "Country of production"
+      - name: vda_product_data
+      - name: kassal_store_data
+
+
