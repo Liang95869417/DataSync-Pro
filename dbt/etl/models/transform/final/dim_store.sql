@@ -2,13 +2,12 @@
 
 -- Create the dimension table for store by extracting unique stores from the source data
 WITH dim_store_cte AS (
-    SELECT
+    SELECT DISTINCT
         store.code AS store_code,
-        ANY_VALUE(store.name) AS store_name,
-        ANY_VALUE(store.url) AS store_url,
-        ANY_VALUE(store.logo) AS logo_url
+        store.name AS store_name,
+        store.url AS store_url,
+        store.logo AS logo_url
     FROM {{ ref('merged_product_data') }}
-    GROUP BY store_code
 )
 SELECT
     store_code,

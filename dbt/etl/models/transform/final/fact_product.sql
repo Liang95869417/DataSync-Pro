@@ -6,8 +6,8 @@ WITH fct_product_cte AS (
         product_id,
         ean,
         product_name,
-        product_weight,
-        weight_unit,
+        weight_struct.product_weight AS product_weight,
+        weight_struct.weight_unit AS weight_unit,
         kassal_image_url,
         vda_image_url,
         created_at,
@@ -21,7 +21,8 @@ WITH fct_product_cte AS (
         max_temp,
         price_id,
         category_id,
-        vendor_id
+        vendor_id,
+        store.code AS store_code
     FROM {{ ref('merged_product_data') }}
 )
 SELECT
@@ -32,8 +33,6 @@ SELECT
     weight_unit,
     kassal_image_url,
     vda_image_url,
-    category_id,
-    vendor_id,
     created_at,
     updated_at,
     allergens,
@@ -44,5 +43,7 @@ SELECT
     min_temp,
     max_temp,
     price_id,
-    store_id
+    category_id,
+    vendor_id,
+    store_code
 FROM fct_product_cte

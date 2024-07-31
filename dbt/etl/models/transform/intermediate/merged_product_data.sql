@@ -29,14 +29,18 @@ SELECT
     k.current_unit_price,
     k.brand,
     k.store,
-    k.product_weight,
-    k.weight_unit,
+    CASE
+        WHEN k.product_weight IS NOT NULL AND k.weight_unit IS NOT NULL THEN
+            STRUCT(k.product_weight AS product_weight, k.weight_unit AS weight_unit)
+        ELSE
+            STRUCT(v.product_weight AS product_weight, v.weight_unit AS weight_unit)
+    END AS weight_struct,
     v.gln,
     v.production_country,
     v.min_temp,
     v.max_temp,
     GENERATE_UUID() AS category_id,
-    GENERATE_UUID() AS vendor_id,
+    COALESCE(TO_HEX(MD5(COALESCE(k.vendor_name, v.vendor_name))), GENERATE_UUID()) AS vendor_id,
     GENERATE_UUID() AS price_id
 FROM
     kassal_flattened k

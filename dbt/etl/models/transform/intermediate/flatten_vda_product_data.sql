@@ -26,7 +26,9 @@ WITH vda_flattened AS (
         produksjonsland AS production_country,
         minimumsTemperaturCelcius AS min_temp,
         maksimumsTemperaturCelcius AS max_temp,
-        merkeordninger AS product_desc
+        merkeordninger AS product_desc,
+        mengde AS product_weight,
+        mengdeType AS weight_unit
     FROM
         datasync-pro.raw_dataset.vda_product_data_test
 )

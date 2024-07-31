@@ -30,7 +30,7 @@ WITH kassal_flattened AS (
         ) AS nutrition,
         brand,
         store,
-        weight AS product_weight,
+        CAST(weight AS FLOAT64) AS product_weight,
         weight_unit,
         description AS product_desc
     FROM
