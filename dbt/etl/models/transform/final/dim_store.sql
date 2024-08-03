@@ -15,4 +15,5 @@ SELECT
     store_url,
     logo_url
 FROM dim_store_cte
+WHERE store_code IS NOT NULL
 

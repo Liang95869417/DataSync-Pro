@@ -53,18 +53,18 @@ def load_blob_to_bigquery(client, dataset_id, table_id, processed_lines, schema,
 
             logging.info(f"Loaded data into {dataset_id}.{temp_table_id}")
 
-            merge_job = client.query(f"""
-                MERGE `{dataset_id}.{table_id}` T
-                USING `{dataset_id}.{temp_table_id}` S
-                ON T.{unique_key} = S.{unique_key}
-                WHEN NOT MATCHED THEN
-                  INSERT ROW
-            """)
-            merge_job.result()
+            # merge_job = client.query(f"""
+            #     MERGE `{dataset_id}.{table_id}` T
+            #     USING `{dataset_id}.{temp_table_id}` S
+            #     ON T.{unique_key} = S.{unique_key}
+            #     WHEN NOT MATCHED THEN
+            #       INSERT ROW
+            # """)
+            # merge_job.result()
 
-            logging.info(f"Merged data from {temp_table_id} into {table_id}")
+            # logging.info(f"Merged data from {temp_table_id} into {table_id}")
 
-            client.delete_table(temp_table_id)
+            # client.delete_table(temp_table_id)
 
         except GoogleAPIError as e:
             logging.error(f"Failed to load data from {temp_file_path} into {table_id}: {e}")

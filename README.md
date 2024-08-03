@@ -12,3 +12,7 @@ With DataSync Pro, organizations can automate the ingestion of data from diverse
 - Flexible and Modular Architecture: Easily extend the platform to accommodate new data sources and transformation requirements.
 
 DataSync Pro empowers businesses to make informed decisions by providing a unified, high-quality data environment that supports advanced analytics and reporting.
+
+# prod
+- profiles.yml
+- sources.yml

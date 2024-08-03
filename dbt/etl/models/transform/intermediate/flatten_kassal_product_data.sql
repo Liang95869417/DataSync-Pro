@@ -1,7 +1,7 @@
 -- models/intermediate/flatten_kassal_product_data.sql
 
 
-WITH kassal_flattened AS (
+WITH kassal_raw AS (
     SELECT
         id AS product_id,
         ean,
@@ -36,5 +36,15 @@ WITH kassal_flattened AS (
         description AS product_desc
     FROM
         `{{ var('dataset') }}.{{ var('kassal_table_id') }}`
+    WHERE
+        ean IS NOT NULL AND ean != ''
+),
+kassal_ranked AS (
+    SELECT
+        *,
+        ROW_NUMBER() OVER (PARTITION BY ean ORDER BY updated_at DESC) AS rn
+    FROM
+        kassal_raw
 )
-SELECT * FROM kassal_flattened
+SELECT * FROM kassal_ranked
+WHERE rn = 1

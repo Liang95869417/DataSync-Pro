@@ -1,7 +1,7 @@
 version: 2
 
 sources:
-  - name: production_dataset # using raw_dataset for development
+  - name: production_dataset # change production_dataset for development
     tables:
       - name: kassal_product_data
       - name: vda_product_data
