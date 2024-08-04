@@ -8,7 +8,7 @@ WITH vda_flattened AS (
         firmaNavn AS vendor_name,
         bildeUrl AS image_url,
         sistEndret AS updated_at,
-         (
+        (
             SELECT STRING_AGG(allergen.allergen, ', ')
             FROM UNNEST(allergener) AS allergen
             WHERE allergen.verdi = 'Inneholder' OR allergen.verdi = 'Kan inneholde'

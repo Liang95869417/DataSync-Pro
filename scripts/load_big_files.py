@@ -6,7 +6,7 @@ def load_data_from_gcs(project_id, dataset_id, table_id, gcs_uri):
     client = bigquery.Client(project=project_id)
 
     job_config = bigquery.LoadJobConfig(
-        schema=kassal_store_schema,
+        schema=vda_product_schema,
         source_format=bigquery.SourceFormat.NEWLINE_DELIMITED_JSON,
     )
 
@@ -25,7 +25,7 @@ def load_data_from_gcs(project_id, dataset_id, table_id, gcs_uri):
 if __name__ == "__main__":
     project_id = 'datasync-pro'
     dataset_id = 'production_dataset'
-    table_id = 'kassal_store_data' 
-    gcs_uri = 'gs://ingested-data-1/production/kassal_store_data.ndjson'
+    table_id = 'vda_product_data' 
+    gcs_uri = 'gs://ingested-data-1/production/vda_product_data.ndjson'
 
     load_data_from_gcs(project_id, dataset_id, table_id, gcs_uri)
