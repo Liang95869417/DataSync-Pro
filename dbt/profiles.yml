@@ -1,5 +1,5 @@
 etl:
-  target: prod
+  target: prod # change to prod when deploy
   outputs:
     dev:
       dataset: raw_dataset

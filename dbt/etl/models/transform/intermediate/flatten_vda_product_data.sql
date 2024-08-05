@@ -8,7 +8,7 @@ WITH vda_flattened AS (
         firmaNavn AS vendor_name,
         bildeUrl AS image_url,
         sistEndret AS updated_at,
-         (
+        (
             SELECT STRING_AGG(allergen.allergen, ', ')
             FROM UNNEST(allergener) AS allergen
             WHERE allergen.verdi = 'Inneholder' OR allergen.verdi = 'Kan inneholde'
@@ -28,8 +28,10 @@ WITH vda_flattened AS (
         maksimumsTemperaturCelcius AS max_temp,
         merkeordninger AS product_desc,
         mengde AS product_weight,
-        mengdeType AS weight_unit
+        mengdeType AS weight_unit,
+        ROW_NUMBER() OVER (PARTITION BY gtin ORDER BY sistEndret DESC) AS rn
     FROM
         `{{ var('dataset') }}.{{ var('vda_table_id') }}`
 )
 SELECT * FROM vda_flattened
+WHERE rn = 1
