@@ -1,6 +1,7 @@
 import requests
 import logging
 from typing import List, Optional
+from datetime import datetime, timezone
 from airflow.models import Variable
 from scripts.utils import save_to_ndjson
 
@@ -18,24 +19,35 @@ def get_kassal_response(url: str, params: dict = {}) -> Optional[dict]:
         logging.error(f'Failed to fetch data from API. Error: {e}')
         return None
 
-def ingest_kassal_product_data_all() -> None:
-    all_products: List[dict] = []
+def ingest_kassal_product_data_since(cutoff_date: datetime, temp_file: str) -> None:
+    new_products: List[dict] = []
     url = f"https://kassal.app/api/v1/products?page=1"
     params = {"size": 100, "sort": "date_desc"}
-    while url:
+    more_data = True
+    logging.info(f"Start to extract latest data since {cutoff_date}")
+
+    while url and more_data:
         response = get_kassal_response(url, params)
         if not response:
             break
         product_info = response.get('data', [])
-        all_products.extend(product_info)
+        # Filter products by cutoff date and stop if all products are older
+        for product in product_info:
+            product_created_at = datetime.fromisoformat(product['created_at']).date()
+            if product_created_at >= cutoff_date:
+                logging.info(f"Fetched data from {product_created_at}")
+                new_products.append(product)
+            else:
+                more_data = False
+                break
+        
         url = response['links'].get('next')
 
-    if all_products:
-        local_path = '/tmp/kassal_product_data_all.ndjson'
-        save_to_ndjson(local_path, all_products)
-        logging.info(f'Data fetched from Kassal product endpoint: {response}')
+    if new_products:
+        save_to_ndjson(temp_file, new_products)
+        logging.info(f'Data fetched and filtered from Kassal product endpoint: {len(new_products)} records')
     else:
-        logging.error('Failed to fetch Kassal product data')
+        logging.error('No new data to fetch since the cutoff date')
 
 def ingest_kassal_product_data() -> None:
     url = f"https://kassal.app/api/v1/products?page=1"
@@ -43,8 +55,8 @@ def ingest_kassal_product_data() -> None:
     response = get_kassal_response(url, params)
     if response:
         product_info = response.get('data', [])
-        local_path = '/tmp/kassal_product_data_test.ndjson'
-        save_to_ndjson(local_path, product_info)
+        temp_file = '/tmp/kassal_product_data_test.ndjson'
+        save_to_ndjson(temp_file, product_info)
         logging.info(f'Data fetched from Kassal product endpoint: {response}')
     else:
         logging.error('Failed to fetch Kassal product data')
@@ -75,8 +87,8 @@ def ingest_kassal_store_data_all() -> None:
             url = response['links'].get('next')
 
     if all_stores:
-        local_path = '/tmp/kassal_store_data.ndjson'
-        save_to_ndjson(local_path, all_stores)
+        temp_file = '/tmp/kassal_store_data.ndjson'
+        save_to_ndjson(temp_file, all_stores)
         logging.info(f'Data fetched from Kassal store endpoint: {all_stores}')
     else:
         logging.error('Failed to fetch Kassal store data')

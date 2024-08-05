@@ -1,13 +1,18 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator
-from datetime import datetime
-from scripts.api_ingestion_kassal import ingest_kassal_product_data, ingest_kassal_store_data_all
+from datetime import datetime, timedelta, timezone
+from scripts.api_ingestion_kassal import ingest_kassal_product_data_since, ingest_kassal_store_data_all
 from scripts.api_ingestion_vda import ingest_VDA_product_data
 from scripts.file_processing import process_uploaded_files
 from scripts.gcs_upload import upload_to_gcs
 from airflow.models.baseoperator import chain
 from scripts.load_json_to_bigquery import load_json_to_bigquery
 import subprocess
+
+cutoff_date = datetime.now(timezone.utc) - timedelta(days=5)
+date_str = cutoff_date.strftime('%Y%m%d')
+kassal_temp_file = f'kassal_product_data_{date_str}.ndjson'
+vda_ltemp_file = f'vda_product_data_{date_str}.ndjson'
 
 default_args = {
     'owner': 'airflow',
@@ -31,41 +36,43 @@ dag = DAG(
 
 ingest_kassal_product_data_task = PythonOperator(
     task_id='ingest_kassal_product_data',
-    python_callable=ingest_kassal_product_data,
+    python_callable=lambda: ingest_kassal_product_data_since(cutoff_date.date(),
+                                                             kassal_temp_file),
     dag=dag,
 )
 
-ingest_kassal_store_data_task = PythonOperator(
-    task_id='ingest_kassal_store_data',
-    python_callable=ingest_kassal_store_data_all,
-    dag=dag,
-)
+# # it seems that we don't need to update store data weekly
+# ingest_kassal_store_data_task = PythonOperator(
+#     task_id='ingest_kassal_store_data',
+#     python_callable=ingest_kassal_store_data_all,
+#     dag=dag,
+# )
 
 ingest_vda_product_data_task = PythonOperator(
     task_id='ingest_vda_product_data',
-    python_callable=lambda: ingest_VDA_product_data('/tmp/kassal_product_data_test.ndjson',
-                                                    '/tmp/vda_product_data_test.ndjson'),
+    python_callable=lambda: ingest_VDA_product_data(kassal_temp_file,
+                                                    vda_ltemp_file),
     dag=dag,
 )
 
 upload_kassal_product_data_task = PythonOperator(
     task_id='upload_kassal_product_data_to_gcs',
-    python_callable=lambda: upload_to_gcs('/tmp/kassal_product_data_test.ndjson', 
-                                          'test/kassal_product_data_test.ndjson'),
+    python_callable=lambda: upload_to_gcs(kassal_temp_file, 
+                                          f'production/{kassal_temp_file}'),
     dag=dag,
 )
 
-upload_kassal_store_data_task = PythonOperator(
-    task_id='upload_kassal_store_data_to_gcs',
-    python_callable=lambda: upload_to_gcs('/tmp/kassal_store_data_test.ndjson', 
-                                          'test/kassal_store_data_test.ndjson'),
-    dag=dag,
-)
+# upload_kassal_store_data_task = PythonOperator(
+#     task_id='upload_kassal_store_data_to_gcs',
+#     python_callable=lambda: upload_to_gcs('/tmp/kassal_store_data_production.ndjson', 
+#                                           'production/kassal_store_data_production.ndjson'),
+#     dag=dag,
+# )
 
 upload_vda_product_data_task = PythonOperator(
     task_id='upload_vda_product_data_to_gcs',
-    python_callable=lambda: upload_to_gcs('/tmp/vda_product_data_test.ndjson', 
-                                          'test/vda_product_data_test.ndjson'),
+    python_callable=lambda: upload_to_gcs(vda_ltemp_file, 
+                                          f'production/{vda_ltemp_file}'),
     dag=dag,
 )
 
@@ -74,8 +81,9 @@ load_json_task = PythonOperator(
         python_callable=load_json_to_bigquery,
         op_kwargs={
             'bucket_name': 'ingested-data-1',
-            'source_prefix': 'test/',
-            'dataset_id': 'raw_dataset',
+            'source_prefix': 'production/',
+            'dataset_id': 'production_dataset',
+            'date_str': date_str,
         }
     )
 
@@ -99,22 +107,5 @@ chain(ingest_kassal_product_data_task,
       load_json_task,
       dbt_run,
       dbt_test)
-chain(ingest_kassal_store_data_task,
-      upload_kassal_store_data_task)
-
-
-
-# ## task for ingesting data uploaded from platform
-# process_files_task = PythonOperator(
-#     task_id='process_uploaded_files',
-#     python_callable=process_uploaded_files,
-#     dag=dag,
-# )
-
-# upload_processed_files_task = PythonOperator(
-#     task_id='upload_processed_files_to_gcs',
-#     python_callable=lambda: upload_to_gcs('/tmp/processed_files/', 'processed_files/'),
-#     dag=dag,
-# )
-
-# process_files_task >> upload_processed_files_task
+# chain(ingest_kassal_store_data_task,
+#       upload_kassal_store_data_task)

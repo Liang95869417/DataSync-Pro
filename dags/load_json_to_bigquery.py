@@ -1,11 +1,13 @@
 import os
 import json
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.operators.empty import EmptyOperator
 from scripts.load_json_to_bigquery import load_json_to_bigquery
 
+cutoff_date = datetime.now(timezone.utc) - timedelta(days=2)
+date_str = cutoff_date.strftime('%Y%m%d')
 
 default_args = {
     'start_date': datetime(2024, 1, 1),
@@ -26,6 +28,7 @@ with DAG('load_json_to_raw_dag',
             'bucket_name': 'ingested-data-1',
             'source_prefix': 'production/',
             'dataset_id': 'production_dataset',
+            'date_str': date_str,
         }
     )
 

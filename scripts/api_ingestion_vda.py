@@ -1,7 +1,7 @@
 import requests
 import json
 import logging
-from typing import List, Optional
+from typing import Set, Optional
 from airflow.models import Variable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from tenacity import retry, stop_after_attempt, wait_exponential
@@ -37,9 +37,9 @@ def get_access_token() -> str:
         return None
     return response.json().get('access_token')
 
-def get_gtin_list(api_response: dict) -> List[int]:
+def get_gtin_list(api_response: dict) -> Set[int]:
     product_data = api_response
-    gtin_list = [int(item['ean']) for item in product_data if 'ean' in item and item['ean']] 
+    gtin_list = {int(item['ean']) for item in product_data if 'ean' in item and item['ean']} 
     return gtin_list
 
 @retry(stop=stop_after_attempt(5), wait=wait_exponential(multiplier=1, min=4, max=10))
@@ -55,7 +55,7 @@ def get_VDA_response(gtin: int) -> Optional[dict]:
         return None
     return response.json()
 
-def ingest_VDA_product_data(kassal_temp_file, local_vda_temp_file) -> None:
+def ingest_VDA_product_data(kassal_temp_file: str, vda_temp_file: str) -> None:
     try:
         with open(kassal_temp_file, "r") as f:
             kassal_product_data = [json.loads(line) for line in f]
@@ -82,5 +82,5 @@ def ingest_VDA_product_data(kassal_temp_file, local_vda_temp_file) -> None:
             except Exception as e:
                 logging.error(f'Error processing GTIN {gtin}: {e}')
 
-    save_to_ndjson(local_vda_temp_file, results)
+    save_to_ndjson(vda_temp_file, results)
 
